@@ -1,0 +1,221 @@
+\documentclass[tikz,border=10pt]{standalone}
+
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usetikzlibrary{
+    arrows.meta,
+    positioning,
+    shapes.geometric,
+    fit,
+    backgrounds
+}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    node distance=8mm and 12mm,
+    >=Latex,
+    box/.style={
+        rectangle,
+        rounded corners,
+        draw=black!70,
+        thick,
+        align=center,
+        minimum width=32mm,
+        minimum height=10mm,
+        fill=blue!8
+    },
+    process/.style={
+        rectangle,
+        rounded corners,
+        draw=black!70,
+        thick,
+        align=center,
+        minimum width=38mm,
+        minimum height=11mm,
+        fill=green!8
+    },
+    efficient/.style={
+        rectangle,
+        rounded corners,
+        draw=black!70,
+        thick,
+        align=center,
+        minimum width=42mm,
+        minimum height=11mm,
+        fill=orange!15
+    },
+    output/.style={
+        rectangle,
+        rounded corners,
+        draw=black!70,
+        thick,
+        align=center,
+        minimum width=32mm,
+        minimum height=10mm,
+        fill=purple!10
+    },
+    arrow/.style={
+        ->,
+        thick,
+        draw=black!70
+    }
+]
+
+% ============================================================
+% MAIN PIPELINE
+% ============================================================
+
+\node[box] (input) {Input\\
+    Text / Image / Audio / Data};
+
+\node[process, below=of input] (preprocess) {
+    Preprocessing\\
+    Tokenization / Encoding / Normalization
+};
+
+\node[process, below=of preprocess] (embedding) {
+    Representation\\
+    Embeddings / Numerical Vectors
+};
+
+\node[process, below=of embedding] (attention) {
+    Context Processing\\
+    Attention / State Representation
+};
+
+\node[process, below=of attention] (network) {
+    Neural Network\\
+    Transformer / MoE / SSM / Hybrid
+};
+
+\node[process, below=of network] (prediction) {
+    Prediction Distribution\\
+    $P(x_{t+1}\mid x_{\leq t})$
+};
+
+\node[process, below=of prediction] (decoding) {
+    Decoding / Selection\\
+    Sampling / Greedy / Beam / Verification
+};
+
+\node[output, below=of decoding] (output) {
+    Output\\
+    Text / Image / Audio / Action
+};
+
+\draw[arrow] (input) -- (preprocess);
+\draw[arrow] (preprocess) -- (embedding);
+\draw[arrow] (embedding) -- (attention);
+\draw[arrow] (attention) -- (network);
+\draw[arrow] (network) -- (prediction);
+\draw[arrow] (prediction) -- (decoding);
+\draw[arrow] (decoding) -- (output);
+
+
+% ============================================================
+% EFFICIENCY METHODS
+% ============================================================
+
+\node[efficient, right=35mm of attention] (efficientattention) {
+    Efficient Attention\\
+    GQA / MQA / MLA\\
+    Sparse / Linear Attention
+};
+
+\node[efficient, right=35mm of network] (moe) {
+    Mixture-of-Experts\\
+    Activate only selected experts
+};
+
+\node[efficient, right=35mm of prediction] (speculative) {
+    Speculative Decoding\\
+    Small model drafts\\
+    Large model verifies
+};
+
+\node[efficient, right=35mm of decoding] (quant) {
+    Quantization\\
+    FP16 $\rightarrow$ INT8 / INT4\\
+    Lower memory + bandwidth
+};
+
+\node[efficient, right=35mm of preprocess] (rag) {
+    Retrieval-Augmented Generation\\
+    Retrieve relevant information\\
+    before generation
+};
+
+\node[efficient, right=35mm of output] (cache) {
+    KV Cache / Prefix Cache\\
+    Reuse previous computation
+};
+
+
+% ============================================================
+% CONNECTIONS
+% ============================================================
+
+\draw[arrow] (attention.east) -- (efficientattention.west);
+\draw[arrow] (network.east) -- (moe.west);
+\draw[arrow] (prediction.east) -- (speculative.west);
+\draw[arrow] (decoding.east) -- (quant.west);
+
+\draw[arrow] (preprocess.east) -- (rag.west);
+\draw[arrow] (output.east) -- (cache.west);
+
+
+% ============================================================
+% FEEDBACK / ITERATIVE SYSTEMS
+% ============================================================
+
+\node[process, left=35mm of prediction] (tools) {
+    External Tools / Retrieval\\
+    Search / Database / Calculator / APIs
+};
+
+\node[process, left=35mm of decoding] (verify) {
+    Verification / Evaluation\\
+    Check constraints\\
+    Refine if necessary
+};
+
+\draw[arrow] (prediction.west) -- (tools.east);
+\draw[arrow] (tools.east) |- (attention.west);
+
+\draw[arrow] (decoding.west) -- (verify.east);
+\draw[arrow] (verify.east) |- (prediction.west);
+
+
+% ============================================================
+% GROUPING
+% ============================================================
+
+\begin{scope}[on background layer]
+
+\node[
+    draw=blue!60,
+    rounded corners,
+    thick,
+    fit=(input)(preprocess)(embedding)(attention)
+] {};
+
+\node[
+    draw=green!60,
+    rounded corners,
+    thick,
+    fit=(network)(prediction)(decoding)
+] {};
+
+\node[
+    draw=orange!70,
+    rounded corners,
+    thick,
+    fit=(efficientattention)(moe)(speculative)(quant)(rag)(cache)
+] {};
+
+\end{scope}
+
+\end{tikzpicture}
+
+\end{document}
